@@ -4,11 +4,15 @@ let mongoose = require('mongoose')
 let removefile = require('../helper/remove')
 let Newscontroller = {
      index : async (req,res) => {
+             const title = req.query.title || ""; 
+              const query = title
+    ? { title: { $regex: new RegExp(title, "i") } } // ✅ Safe regex
+    : {};
         let limit = 8;
            let page = req.query.page
            console.log(page)
        
-           let news = await News.find().skip((page - 1)*limit).limit(limit).sort({createdAt:-1});
+           let news = await News.find(query).skip((page - 1)*limit).limit(limit).sort({createdAt:-1});
            let totalnewscount = await News.countDocuments()
            let totalpagescount = Math.ceil(totalnewscount/limit)
            console.log(totalpagescount)

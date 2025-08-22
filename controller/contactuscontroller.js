@@ -4,22 +4,31 @@
 
 let mongoose = require('mongoose');
 const Contactus = require("../model/Contactus");
+const { JSDOM } = require('jsdom');
+const createDOMPurify = require('isomorphic-dompurify');
 
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window);
 
 
 let ContactusController = {
   index: async(req, res) => {
-    let data = await Contactus.find().sort({createdAt:-1});
+     const name = req.query.name || ""; 
+    let data = await Contactus.find({
+     name: { $regex: name, $options: "i" }// case-insensitive partial match
+    }).sort({createdAt:-1});
     return res.json(data);
   },
   store: async(req, res) => {
   
   try { let {name,email,phno,msg}=req.body
+     const safeMsg = DOMPurify.sanitize(msg, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
     let data = await Contactus.create({
         name,
         email,
         phno,
-        msg      
+        msg,
+         msg: safeMsg       
     })
     return res.json(data);}catch(e){
       return res.status(400).json({msg:"error message"})
