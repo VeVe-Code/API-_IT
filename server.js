@@ -12,11 +12,11 @@ let cors = require('cors')
 let app = express()
 var cookieParser = require('cookie-parser')
 let mongoURL = "mongodb+srv://kaungzinthu:test1234@cluster0.rdmhdpq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-
+const JWT_SECRET = process.env.JWT_SECRET;  
 mongoose.connect(mongoURL).then(()=>{
     console.log("connect to db ")
-    app.listen(process.env.PORT,()=>{
-    console.log("server is running"+process.env.PORT)
+    app.listen(process.env.PORT||4000,()=>{
+    console.log("server is running"+process.env.PORT||4000)
 })
 })
 app.use(cors(
